@@ -1,7 +1,20 @@
 version: '3.8'
 
 services:
-  # 1. Our Backend API
+  # 1. NEW: Streamlit Frontend Dashboard
+  frontend:
+    build: .
+    command: streamlit run app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    environment:
+      - BACKEND_URL=${BACKEND_URL}
+    depends_on:
+      - web
+
+  # 2. Our Backend API
   web:
     build: .
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
@@ -18,7 +31,7 @@ services:
       - db
       - chroma
 
-  # 2. Our Relational DB (Structured data: user logs, app status)
+  # 3. Our Relational DB (Structured data: user logs, app status)
   db:
     image: postgres:15-alpine
     environment:
@@ -30,11 +43,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # 3. NEW: Our Vector DB (Unstructured data: Resume embeddings)
+  # 4. Our Vector DB (Unstructured data: Resume embeddings)
   chroma:
     image: chromadb/chroma:latest
     ports:
-      - "8001:8000"  # We map it to 8001 on your machine so it doesn't clash with FastAPI
+      - "8001:8000"  # Mapped to 8001 on the host to avoid clashing with FastAPI
     volumes:
       - chroma_data:/chroma/chroma
     environment:
@@ -42,4 +55,4 @@ services:
 
 volumes:
   postgres_data:
-  chroma_data:       # Persistent storage for our vector embeddings
+  chroma_data:       # Persistent storage for vector embeddings
