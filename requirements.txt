@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+chromadb
+google-genai
+pypdf
+python-multipart
+streamlit

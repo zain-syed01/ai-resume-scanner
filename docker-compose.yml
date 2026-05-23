@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # 1. Our Backend API
+  web:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql://postgres:mysecretpassword@db:5432/postgres
+      - CHROMA_HOST=chroma
+      - CHROMA_PORT=8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - db
+      - chroma
+
+  # 2. Our Relational DB (Structured data: user logs, app status)
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 3. NEW: Our Vector DB (Unstructured data: Resume embeddings)
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8000"  # We map it to 8001 on your machine so it doesn't clash with FastAPI
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+
+volumes:
+  postgres_data:
+  chroma_data:       # Persistent storage for our vector embeddings
