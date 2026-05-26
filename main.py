@@ -117,11 +117,12 @@ async def upload_resume(file: UploadFile = File(...)):
     
 
 @app.post("/resume/scan")
-def scan_resumes_against_job(job_description: str, db: Session = Depends(get_db)):
+def scan_resumes_against_job(payload: schemas.JobScanRequest, db: Session = Depends(get_db)):
     """
     Takes a target job description, queries ChromaDB for the most semantically 
     similar resume, and uses Gemini to analyze the gaps.
     """
+    job_description = payload.job_description  # Unpack the string from the payload
     try:
         
         chroma_collection = get_or_create_resume_collection()

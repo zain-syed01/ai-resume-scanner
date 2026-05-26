@@ -47,8 +47,8 @@ with col2:
             with st.spinner("Querying ChromaDB and invoking Gemini engine..."):
                 try:
                     # Pass the job description text as a query parameter to our scan route
-                    params = {"job_description": job_description}
-                    response = requests.post(f"{BACKEND_URL}/resume/scan", params=params)
+                    payload = {"job_description": job_description}
+                    response = requests.post(f"{BACKEND_URL}/resume/scan", json=payload)
                     
                     if response.status_code == 200:
                         result = response.json()

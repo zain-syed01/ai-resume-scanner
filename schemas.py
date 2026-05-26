@@ -22,4 +22,7 @@ class JobApplicationResponse(JobApplicationBase):
     class Config:
         from_attributes = True
 
-        
+
+
+class JobScanRequest(BaseModel):
+    job_description: str
