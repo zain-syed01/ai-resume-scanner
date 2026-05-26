@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/app
     environment:
-      - BACKEND_URL=${BACKEND_URL}
+      - BACKEND_URL=http://web:8000
     depends_on:
       - web
 
